@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Stock Alerts{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Stock Alerts</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+            <a href="{% url 'inventory:check_stock_levels' %}" class="btn btn-primary">
+                <i class="fas fa-sync"></i> Check Stock Levels
+            </a>
+        </div>
+    </div>
+
+    <!-- Low Stock Alerts -->
+    <div class="card mb-4">
+        <div class="card-header bg-danger text-white">
+            <h5 class="card-title mb-0">Low Stock Items</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th>Current Stock</th>
+                            <th>Minimum Stock</th>
+                            <th>Reorder Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in low_stock_items %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'inventory:item_detail' item.pk %}">{{ item.name }}</a>
+                            </td>
+                            <td>{{ item.category.name }}</td>
+                            <td class="text-danger">{{ item.current_stock }}</td>
+                            <td>{{ item.minimum_stock }}</td>
+                            <td>{{ item.reorder_level }}</td>
+                            <td>
+                                <a href="{% url 'inventory:stock_movement_create' %}?item={{ item.pk }}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-plus"></i> Add Stock
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No low stock items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Expiring Items -->
+    <div class="card mb-4">
+        <div class="card-header bg-warning">
+            <h5 class="card-title mb-0">Expiring Items</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th>Current Stock</th>
+                            <th>Expiry Date</th>
+                            <th>Days Until Expiry</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in expiring_items %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'inventory:item_detail' item.pk %}">{{ item.name }}</a>
+                            </td>
+                            <td>{{ item.category.name }}</td>
+                            <td>{{ item.current_stock }}</td>
+                            <td class="{% if item.is_expired %}text-danger{% else %}text-warning{% endif %}">
+                                {{ item.expiry_date }}
+                            </td>
+                            <td>{{ item.days_until_expiry }}</td>
+                            <td>
+                                <a href="{% url 'inventory:item_update' item.pk %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i> Update
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No expiring items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Reorder Level Alerts -->
+    <div class="card">
+        <div class="card-header bg-info text-white">
+            <h5 class="card-title mb-0">Items at Reorder Level</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Category</th>
+                            <th>Current Stock</th>
+                            <th>Reorder Level</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in reorder_items %}
+                        <tr>
+                            <td>
+                                <a href="{% url 'inventory:item_detail' item.pk %}">{{ item.name }}</a>
+                            </td>
+                            <td>{{ item.category.name }}</td>
+                            <td class="text-warning">{{ item.current_stock }}</td>
+                            <td>{{ item.reorder_level }}</td>
+                            <td>
+                                <a href="{% url 'inventory:stock_movement_create' %}?item={{ item.pk }}" class="btn btn-sm btn-success">
+                                    <i class="fas fa-plus"></i> Add Stock
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No items at reorder level found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

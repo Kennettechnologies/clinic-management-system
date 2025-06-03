@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Inventory Items{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Inventory Items</h1>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'inventory:item_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Item
+            </a>
+            <a href="{% url 'inventory:stock_movement_create' %}" class="btn btn-success">
+                <i class="fas fa-exchange-alt"></i> Record Movement
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>SKU</th>
+                            <th>Quantity</th>
+                            <th>Unit</th>
+                            <th>Unit Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.category.name }}</td>
+                            <td>{{ item.sku }}</td>
+                            <td>
+                                <span class="{% if item.needs_reorder %}text-danger{% endif %}">
+                                    {{ item.quantity }}
+                                </span>
+                            </td>
+                            <td>{{ item.unit }}</td>
+                            <td>${{ item.unit_price|floatformat:2 }}</td>
+                            <td>
+                                <span class="badge {% if item.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ item.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td>
+                                <a href="{% url 'inventory:item_update' item.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No items found</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

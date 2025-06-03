@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Charges{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Charges</h1>
+        </div>
+        <div class="col text-end">
+            {% if user.role == 'admin' %}
+            <a href="{% url 'billing:charge_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Charge
+            </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for charge in charges %}
+                        <tr>
+                            <td>{{ charge.name }}</td>
+                            <td>{{ charge.get_charge_type_display }}</td>
+                            <td>{{ charge.amount }}</td>
+                            <td>
+                                <span class="badge {% if charge.is_active %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ charge.is_active|yesno:"Active,Inactive" }}
+                                </span>
+                            </td>
+                            <td>
+                                {% if user.role == 'admin' %}
+                                <a href="{% url 'billing:charge_update' charge.pk %}" class="btn btn-sm btn-primary">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No charges found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

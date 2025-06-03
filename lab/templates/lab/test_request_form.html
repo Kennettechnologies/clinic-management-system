@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}
+{% if form.instance.pk %}
+{% trans "Edit Test Request" %}
+{% else %}
+{% trans "New Test Request" %}
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>
+                {% if form.instance.pk %}
+                {% trans "Edit Test Request" %}
+                {% else %}
+                {% trans "New Test Request" %}
+                {% endif %}
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            {% include 'includes/language_switcher.html' %}
+            <a href="{% url 'lab:test_request_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {% trans "Back to List" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.patient|as_crispy_field }}
+                        {{ form.test_type|as_crispy_field }}
+                        {{ form.priority|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.scheduled_date|as_crispy_field }}
+                        {{ form.clinical_notes|as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i>
+                        {% if form.instance.pk %}
+                        {% trans "Update Request" %}
+                        {% else %}
+                        {% trans "Create Request" %}
+                        {% endif %}
+                    </button>
+                    <a href="{% url 'lab:test_request_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> {% trans "Cancel" %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Initialize datetime picker for scheduled date
+        $('#id_scheduled_date').datetimepicker({
+            format: 'YYYY-MM-DD HH:mm',
+            minDate: moment(),
+            icons: {
+                time: 'fas fa-clock',
+                date: 'fas fa-calendar',
+                up: 'fas fa-arrow-up',
+                down: 'fas fa-arrow-down',
+                previous: 'fas fa-chevron-left',
+                next: 'fas fa-chevron-right',
+                today: 'fas fa-calendar-check',
+                clear: 'fas fa-trash',
+                close: 'fas fa-times'
+            }
+        });
+    });
+</script>
+{% endblock %} 

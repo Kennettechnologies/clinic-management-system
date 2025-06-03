@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Receive Purchase Order{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Receive Purchase Order</h1>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'inventory:purchase_order_detail' order.pk %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Purchase Order
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Order Information</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row mb-0">
+                <dt class="col-sm-3">Order Number</dt>
+                <dd class="col-sm-9">{{ order.order_number }}</dd>
+
+                <dt class="col-sm-3">Supplier</dt>
+                <dd class="col-sm-9">{{ order.supplier.name }}</dd>
+
+                <dt class="col-sm-3">Order Date</dt>
+                <dd class="col-sm-9">{{ order.order_date|date:"M d, Y" }}</dd>
+
+                <dt class="col-sm-3">Expected Delivery</dt>
+                <dd class="col-sm-9">{{ order.expected_delivery_date|date:"M d, Y" }}</dd>
+            </dl>
+        </div>
+    </div>
+
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Order Items</h5>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Ordered</th>
+                                <th>Received</th>
+                                <th>Remaining</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td>{{ item.item.name }}</td>
+                                <td>{{ item.quantity }}</td>
+                                <td>{{ item.received_quantity }}</td>
+                                <td>{{ item.quantity|sub:item.received_quantity }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No items found</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i>
+                    Clicking the button below will mark all remaining items as received and update the inventory.
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check"></i> Receive All Items
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

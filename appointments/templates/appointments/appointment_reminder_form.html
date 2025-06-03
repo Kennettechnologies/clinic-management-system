@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Set Appointment Reminder{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Set Appointment Reminder</h1>
+        <a href="{% url 'appointments:appointment_detail' appointment.pk %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Back to Appointment
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Appointment Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Patient:</strong> {{ appointment.patient.user.get_full_name }}</p>
+                            <p><strong>Doctor:</strong> {{ appointment.doctor.user.get_full_name }}</p>
+                            <p><strong>Date:</strong> {{ appointment.date }}</p>
+                            <p><strong>Time:</strong> {{ appointment.time }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Status:</strong>
+                                {% if appointment.status == 'scheduled' %}
+                                <span class="badge bg-primary">Scheduled</span>
+                                {% elif appointment.status == 'confirmed' %}
+                                <span class="badge bg-success">Confirmed</span>
+                                {% elif appointment.status == 'completed' %}
+                                <span class="badge bg-info">Completed</span>
+                                {% elif appointment.status == 'cancelled' %}
+                                <span class="badge bg-danger">Cancelled</span>
+                                {% elif appointment.status == 'rescheduled' %}
+                                <span class="badge bg-warning">Rescheduled</span>
+                                {% endif %}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Reminder Settings</h5>
+                </div>
+                <div class="card-body">
+                    <form method="post" novalidate>
+                        {% csrf_token %}
+                        {{ form|crispy }}
+                        <div class="mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-bell"></i> Set Reminder
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Existing Reminders</h5>
+                </div>
+                <div class="card-body">
+                    <div class="list-group">
+                        {% for reminder in appointment.appointmentreminder_set.all %}
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">
+                                    {% if reminder.reminder_type == 'email' %}
+                                    <i class="fas fa-envelope"></i>
+                                    {% else %}
+                                    <i class="fas fa-sms"></i>
+                                    {% endif %}
+                                    {{ reminder.get_reminder_type_display }}
+                                </h6>
+                                <small>
+                                    {% if reminder.status == 'pending' %}
+                                    <span class="badge bg-warning">Pending</span>
+                                    {% elif reminder.status == 'sent' %}
+                                    <span class="badge bg-success">Sent</span>
+                                    {% elif reminder.status == 'failed' %}
+                                    <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </small>
+                            </div>
+                            <p class="mb-1">Scheduled for: {{ reminder.scheduled_time }}</p>
+                        </div>
+                        {% empty %}
+                        <p class="text-center mb-0">No reminders set.</p>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

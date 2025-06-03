@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .header {
+            background-color: #2196F3;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .content {
+            padding: 20px;
+            background-color: #f9f9f9;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 12px;
+            color: #666;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        .reminder-box {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Appointment Reminder</h1>
+        </div>
+        <div class="content">
+            <p>Dear {{ appointment.patient.get_full_name }},</p>
+            
+            <div class="reminder-box">
+                <p><strong>Reminder:</strong> You have an upcoming appointment in {{ days_until_appointment }} day(s).</p>
+            </div>
+            
+            <p>Appointment Details:</p>
+            
+            <ul>
+                <li><strong>Date:</strong> {{ appointment.date|date:"F d, Y" }}</li>
+                <li><strong>Time:</strong> {{ appointment.time|time:"g:i A" }}</li>
+                <li><strong>Doctor:</strong> {{ appointment.doctor.get_full_name }}</li>
+                <li><strong>Department:</strong> {{ appointment.doctor.department.name }}</li>
+            </ul>
+
+            {% if appointment.notes %}
+            <p><strong>Notes:</strong><br>{{ appointment.notes }}</p>
+            {% endif %}
+
+            <p>Please remember to:</p>
+            <ul>
+                <li>Arrive 15 minutes before your scheduled appointment time</li>
+                <li>Bring any relevant medical records or test results</li>
+                <li>Bring your insurance card and ID</li>
+            </ul>
+
+            <p>If you need to reschedule or cancel your appointment, please contact us as soon as possible.</p>
+
+            <a href="{{ appointment.get_absolute_url }}" class="button">View Appointment Details</a>
+        </div>
+        <div class="footer">
+            <p>This is an automated reminder. Please do not reply to this email.</p>
+            <p>&copy; {% now "Y" %} {{ clinic_name }}. All rights reserved.</p>
+        </div>
+    </div>
+</body>
+</html> 

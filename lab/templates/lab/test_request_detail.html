@@ -1,0 +1,212 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Test Request Details" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0">{% trans "Test Request Details" %}</h3>
+                    <div class="d-flex gap-2">
+                        {% include 'includes/language_switcher.html' %}
+                        <a href="{% url 'lab:test_request_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> {% trans "Back to List" %}
+                        </a>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>{% trans "Patient Information" %}</h5>
+                            <p><strong>{% trans "Name" %}:</strong> {{ test_request.patient.get_full_name }}</p>
+                            <p><strong>{% trans "ID" %}:</strong> {{ test_request.patient.id }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>{% trans "Test Information" %}</h5>
+                            <p><strong>{% trans "Test Type" %}:</strong> {{ test_request.test_type.name }}</p>
+                            <p><strong>{% trans "Code" %}:</strong> {{ test_request.test_type.code }}</p>
+                            <p><strong>{% trans "Price" %}:</strong> ${{ test_request.test_type.price }}</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <h5>{% trans "Request Details" %}</h5>
+                            <p><strong>{% trans "Requested By" %}:</strong> {{ test_request.requesting_doctor.get_full_name }}</p>
+                            <p><strong>{% trans "Request Date" %}:</strong> {{ test_request.request_date|date:"M d, Y H:i" }}</p>
+                            <p><strong>{% trans "Scheduled Date" %}:</strong> {{ test_request.scheduled_date|date:"M d, Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>{% trans "Status Information" %}</h5>
+                            <p>
+                                <strong>{% trans "Status" %}:</strong>
+                                {% if test_request.status == 'pending' %}
+                                <span class="badge bg-warning">{% trans "Pending" %}</span>
+                                {% elif test_request.status == 'in_progress' %}
+                                <span class="badge bg-info">{% trans "In Progress" %}</span>
+                                {% elif test_request.status == 'completed' %}
+                                <span class="badge bg-success">{% trans "Completed" %}</span>
+                                {% elif test_request.status == 'cancelled' %}
+                                <span class="badge bg-danger">{% trans "Cancelled" %}</span>
+                                {% endif %}
+                            </p>
+                            <p>
+                                <strong>{% trans "Priority" %}:</strong>
+                                {% if test_request.priority == 'urgent' %}
+                                <span class="badge bg-danger">{% trans "Urgent" %}</span>
+                                {% elif test_request.priority == 'high' %}
+                                <span class="badge bg-warning">{% trans "High" %}</span>
+                                {% else %}
+                                <span class="badge bg-info">{% trans "Normal" %}</span>
+                                {% endif %}
+                            </p>
+                            {% if test_request.completed_date %}
+                            <p><strong>{% trans "Completed Date" %}:</strong> {{ test_request.completed_date|date:"M d, Y H:i" }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {% if test_request.clinical_notes %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h5>{% trans "Clinical Notes" %}</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    {{ test_request.clinical_notes|linebreaks }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    {% if test_request.report %}
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <h5>{% trans "Test Report" %}</h5>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <h6>{% trans "Results" %}</h6>
+                                        {{ test_request.report.results|linebreaks }}
+                                    </div>
+                                    {% if test_request.report.reference_range %}
+                                    <div class="mb-3">
+                                        <h6>{% trans "Reference Range" %}</h6>
+                                        {{ test_request.report.reference_range|linebreaks }}
+                                    </div>
+                                    {% endif %}
+                                    {% if test_request.report.interpretation %}
+                                    <div class="mb-3">
+                                        <h6>{% trans "Interpretation" %}</h6>
+                                        {{ test_request.report.interpretation|linebreaks }}
+                                    </div>
+                                    {% endif %}
+                                    <div class="mb-3">
+                                        <h6>{% trans "Test Results" %}</h6>
+                                        <div class="table-responsive">
+                                            <table class="table table-bordered">
+                                                <thead>
+                                                    <tr>
+                                                        <th>{% trans "Parameter" %}</th>
+                                                        <th>{% trans "Value" %}</th>
+                                                        <th>{% trans "Unit" %}</th>
+                                                        <th>{% trans "Reference Range" %}</th>
+                                                        <th>{% trans "Status" %}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for result in test_request.report.results.all %}
+                                                    <tr>
+                                                        <td>{{ result.parameter }}</td>
+                                                        <td>{{ result.value }}</td>
+                                                        <td>{{ result.unit }}</td>
+                                                        <td>{{ result.reference_range }}</td>
+                                                        <td>
+                                                            {% if result.is_abnormal %}
+                                                            <span class="badge bg-danger">{% trans "Abnormal" %}</span>
+                                                            {% else %}
+                                                            <span class="badge bg-success">{% trans "Normal" %}</span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    {% if test_request.report.attachments.exists %}
+                                    <div class="mb-3">
+                                        <h6>{% trans "Attachments" %}</h6>
+                                        <ul class="list-group">
+                                            {% for attachment in test_request.report.attachments.all %}
+                                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                {{ attachment.description|default:"Attachment" }}
+                                                <a href="{{ attachment.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                    <i class="fas fa-download"></i> {% trans "Download" %}
+                                                </a>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            {% if user.role in 'lab_technician,admin' and test_request.status == 'pending' %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Actions" %}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'lab:report_upload' test_request.pk %}" class="btn btn-primary">
+                            <i class="fas fa-upload"></i> {% trans "Upload Report" %}
+                        </a>
+                        <form method="post" action="{% url 'lab:test_request_update_status' test_request.pk %}" class="d-grid">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="in_progress">
+                            <button type="submit" class="btn btn-info">
+                                <i class="fas fa-spinner"></i> {% trans "Mark In Progress" %}
+                            </button>
+                        </form>
+                        <form method="post" action="{% url 'lab:test_request_update_status' test_request.pk %}" class="d-grid">
+                            {% csrf_token %}
+                            <input type="hidden" name="status" value="cancelled">
+                            <button type="submit" class="btn btn-danger">
+                                <i class="fas fa-times"></i> {% trans "Cancel Request" %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if test_request.report and user.role in 'lab_technician,admin' %}
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">{% trans "Report Actions" %}</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'lab:attachment_upload' test_request.report.pk %}" class="btn btn-outline-primary">
+                            <i class="fas fa-paperclip"></i> {% trans "Add Attachment" %}
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %} 

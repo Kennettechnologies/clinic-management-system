@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Lab Test Types{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Lab Test Types</h2>
+        {% if user.role == 'admin' %}
+        <a href="{% url 'lab:test_type_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Test Type
+        </a>
+        {% endif %}
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Name</th>
+                            <th>Price</th>
+                            <th>Turnaround Time</th>
+                            <th>Status</th>
+                            {% if user.role == 'admin' %}
+                            <th>Actions</th>
+                            {% endif %}
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for test_type in test_types %}
+                        <tr>
+                            <td>{{ test_type.code }}</td>
+                            <td>{{ test_type.name }}</td>
+                            <td>${{ test_type.price }}</td>
+                            <td>{{ test_type.turnaround_time }} hours</td>
+                            <td>
+                                {% if test_type.is_active %}
+                                <span class="badge bg-success">Active</span>
+                                {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                                {% endif %}
+                            </td>
+                            {% if user.role == 'admin' %}
+                            <td>
+                                <a href="{% url 'lab:test_type_update' test_type.pk %}" class="btn btn-sm btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                            </td>
+                            {% endif %}
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No test types found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

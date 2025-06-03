@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Add Attachment" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>{% trans "Add Attachment" %}</h2>
+            <p class="text-muted">
+                {% trans "Patient" %}: {{ report.test_request.patient.get_full_name }}<br>
+                {% trans "Test Type" %}: {{ report.test_request.test_type.name }}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% include 'includes/language_switcher.html' %}
+            <a href="{% url 'lab:test_request_detail' report.test_request.pk %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {% trans "Back to Report" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.file|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.description|as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {% trans "Upload Attachment" %}
+                    </button>
+                    <a href="{% url 'lab:test_request_detail' report.test_request.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> {% trans "Cancel" %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if report.attachments.exists %}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h5 class="card-title mb-0">{% trans "Existing Attachments" %}</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "File Name" %}</th>
+                            <th>{% trans "Upload Date" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for attachment in report.attachments.all %}
+                        <tr>
+                            <td>{{ attachment.description|default:"-" }}</td>
+                            <td>{{ attachment.file.name|split:"/"|last }}</td>
+                            <td>{{ attachment.created_at|date:"M d, Y H:i" }}</td>
+                            <td>
+                                <div class="btn-group">
+                                    <a href="{{ attachment.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <i class="fas fa-download"></i> {% trans "Download" %}
+                                    </a>
+                                    {% if user.role in 'lab_technician,admin' %}
+                                    <form method="post" action="{% url 'lab:attachment_delete' attachment.pk %}" class="d-inline">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('{% trans "Are you sure you want to delete this attachment?" %}')">
+                                            <i class="fas fa-trash"></i> {% trans "Delete" %}
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

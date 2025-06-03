@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Reports{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Reports</h1>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Appointment Reports</h5>
+                    <p class="card-text">View daily, weekly, or monthly appointment statistics including completed, cancelled, and no-show appointments.</p>
+                    <a href="{% url 'reports:appointment_report' %}" class="btn btn-primary">
+                        <i class="fas fa-calendar"></i> View Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Revenue Reports</h5>
+                    <p class="card-text">Track revenue, payments, and invoice statistics over time. Analyze trends and generate financial reports.</p>
+                    <a href="{% url 'reports:revenue_report' %}" class="btn btn-primary">
+                        <i class="fas fa-chart-line"></i> View Report
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">Patient Demographics</h5>
+                    <p class="card-text">Analyze patient data including age distribution, gender, blood types, medical conditions, and allergies.</p>
+                    <a href="{% url 'reports:patient_demographics' %}" class="btn btn-primary">
+                        <i class="fas fa-users"></i> View Report
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Purchase Order{% else %}New Purchase Order{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">
+                {% if form.instance.pk %}Edit Purchase Order{% else %}New Purchase Order{% endif %}
+            </h1>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'inventory:purchase_order_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Purchase Orders
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        {{ form.supplier|as_crispy_field }}
+                        {{ form.order_number|as_crispy_field }}
+                        {{ form.order_date|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.expected_delivery_date|as_crispy_field }}
+                        {{ form.status|as_crispy_field }}
+                        {{ form.total_amount|as_crispy_field }}
+                    </div>
+                </div>
+
+                <h4 class="mb-3">Order Items</h4>
+                {{ formset.management_form }}
+                <div class="table-responsive mb-3">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th>Quantity</th>
+                                <th>Unit Price</th>
+                                <th>Total</th>
+                                <th>Delete</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for form in formset %}
+                            <tr class="item-form">
+                                <td>{{ form.id }}{{ form.item|as_crispy_field }}</td>
+                                <td>{{ form.quantity|as_crispy_field }}</td>
+                                <td>{{ form.unit_price|as_crispy_field }}</td>
+                                <td class="item-total">$0.00</td>
+                                <td>{{ form.DELETE|as_crispy_field }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="mb-3">
+                    <button type="button" class="btn btn-secondary" id="add-item">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        {{ form.notes|as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <button type="submit" class="btn btn-primary">
+                        {% if form.instance.pk %}Update{% else %}Create{% endif %} Purchase Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        function updateItemTotal(row) {
+            var quantity = parseFloat(row.find('input[name*="quantity"]').val()) || 0;
+            var unitPrice = parseFloat(row.find('input[name*="unit_price"]').val()) || 0;
+            var total = quantity * unitPrice;
+            row.find('.item-total').text('$' + total.toFixed(2));
+        }
+
+        function updateFormsetIndexes() {
+            $('.item-form').each(function(index) {
+                $(this).find('input, select').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/items-\d+/, 'items-' + index);
+                        $(this).attr('name', name);
+                    }
+                    var id = $(this).attr('id');
+                    if (id) {
+                        id = id.replace(/items-\d+/, 'items-' + index);
+                        $(this).attr('id', id);
+                    }
+                });
+            });
+        }
+
+        $('.item-form').on('change', 'input[name*="quantity"], input[name*="unit_price"]', function() {
+            updateItemTotal($(this).closest('tr'));
+        });
+
+        $('#add-item').click(function() {
+            var formCount = parseInt($('#id_items-TOTAL_FORMS').val());
+            var newForm = $('.item-form:first').clone(true);
+            newForm.find('input').val('');
+            newForm.find('.item-total').text('$0.00');
+            $('.item-form:last').after(newForm);
+            $('#id_items-TOTAL_FORMS').val(formCount + 1);
+            updateFormsetIndexes();
+        });
+
+        $('.item-form').on('click', 'input[name*="DELETE"]', function() {
+            if ($(this).is(':checked')) {
+                $(this).closest('tr').hide();
+            } else {
+                $(this).closest('tr').show();
+            }
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

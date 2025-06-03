@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Edit {{ form.instance.name }}
+    {% else %}
+        Add New Item
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>
+                {% if form.instance.pk %}
+                    Edit {{ form.instance.name }}
+                {% else %}
+                    Add New Item
+                {% endif %}
+            </h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <!-- Basic Information -->
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Basic Information</h5>
+                        {{ form.name|as_crispy_field }}
+                        {{ form.category|as_crispy_field }}
+                        {{ form.sku|as_crispy_field }}
+                        {{ form.description|as_crispy_field }}
+                        {{ form.unit|as_crispy_field }}
+                        {{ form.location|as_crispy_field }}
+                    </div>
+
+                    <!-- Stock Information -->
+                    <div class="col-md-6">
+                        <h5 class="mb-3">Stock Information</h5>
+                        {{ form.current_stock|as_crispy_field }}
+                        {{ form.minimum_stock|as_crispy_field }}
+                        {{ form.reorder_level|as_crispy_field }}
+                        {{ form.expiry_date|as_crispy_field }}
+                        {{ form.is_active|as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 text-end">
+                        <button type="submit" class="btn btn-primary">
+                            {% if form.instance.pk %}
+                                Update Item
+                            {% else %}
+                                Create Item
+                            {% endif %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

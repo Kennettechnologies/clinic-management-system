@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+{% load i18n %}
+
+{% block title %}{% trans "Upload Lab Report" %}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>{% trans "Upload Lab Report" %}</h2>
+            <p class="text-muted">
+                {% trans "Patient" %}: {{ test_request.patient.get_full_name }}<br>
+                {% trans "Test Type" %}: {{ test_request.test_type.name }}
+            </p>
+        </div>
+        <div class="col-md-4 text-end">
+            {% include 'includes/language_switcher.html' %}
+            <a href="{% url 'lab:test_request_detail' test_request.pk %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> {% trans "Back to Request" %}
+            </a>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" enctype="multipart/form-data" novalidate>
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6">
+                        {{ form.report_file|as_crispy_field }}
+                        {{ form.results|as_crispy_field }}
+                        {{ form.reference_range|as_crispy_field }}
+                    </div>
+                    <div class="col-md-6">
+                        {{ form.interpretation|as_crispy_field }}
+                        {{ form.is_abnormal|as_crispy_field }}
+                    </div>
+                </div>
+
+                <div class="mt-4">
+                    <h5>{% trans "Test Results" %}</h5>
+                    {{ result_formset.management_form }}
+                    <div id="result-forms">
+                        {% for result_form in result_formset %}
+                        <div class="card mb-3 result-form">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        {{ result_form.parameter|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{ result_form.value|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{ result_form.unit|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-3">
+                                        {{ result_form.reference_range|as_crispy_field }}
+                                    </div>
+                                    <div class="col-md-2">
+                                        {{ result_form.is_abnormal|as_crispy_field }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        {{ result_form.notes|as_crispy_field }}
+                                    </div>
+                                </div>
+                                {% if result_form.instance.pk %}
+                                {{ result_form.DELETE|as_crispy_field }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    <button type="button" class="btn btn-outline-primary mb-3" id="add-result">
+                        <i class="fas fa-plus"></i> {% trans "Add Result" %}
+                    </button>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {% trans "Upload Report" %}
+                    </button>
+                    <a href="{% url 'lab:test_request_detail' test_request.pk %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> {% trans "Cancel" %}
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    $(document).ready(function() {
+        // Function to update form index
+        function updateFormIndex() {
+            $('.result-form').each(function(index) {
+                $(this).find('input, select, textarea').each(function() {
+                    var name = $(this).attr('name');
+                    if (name) {
+                        name = name.replace(/-\d+-/, '-' + index + '-');
+                        $(this).attr('name', name);
+                        $(this).attr('id', 'id_' + name);
+                    }
+                });
+            });
+            $('#id_results-TOTAL_FORMS').val($('.result-form').length);
+        }
+
+        // Add new result form
+        $('#add-result').click(function() {
+            var formCount = $('.result-form').length;
+            var template = $('.result-form:first').clone();
+            template.find('input, select, textarea').val('');
+            template.find('input[type="checkbox"]').prop('checked', false);
+            $('#result-forms').append(template);
+            updateFormIndex();
+        });
+
+        // Remove result form
+        $(document).on('click', '.remove-result', function() {
+            $(this).closest('.result-form').remove();
+            updateFormIndex();
+        });
+    });
+</script>
+{% endblock %} 

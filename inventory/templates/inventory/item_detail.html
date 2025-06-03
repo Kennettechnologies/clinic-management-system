@@ -1,0 +1,163 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ item.name }} - Item Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>{{ item.name }}</h2>
+            <p class="text-muted">SKU: {{ item.sku }}</p>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to List
+            </a>
+            <a href="{% url 'inventory:item_update' item.pk %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit Item
+            </a>
+            <a href="{% url 'inventory:stock_movement_create' %}?item={{ item.pk }}" class="btn btn-success">
+                <i class="fas fa-exchange-alt"></i> Record Movement
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Item Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Item Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Category</th>
+                            <td>{{ item.category.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ item.description|default:"N/A" }}</td>
+                        </tr>
+                        <tr>
+                            <th>Unit</th>
+                            <td>{{ item.get_unit_display }}</td>
+                        </tr>
+                        <tr>
+                            <th>Location</th>
+                            <td>{{ item.location }}</td>
+                        </tr>
+                        <tr>
+                            <th>Status</th>
+                            <td>
+                                {% if item.is_expired %}
+                                <span class="badge bg-danger">Expired</span>
+                                {% elif item.is_low_stock %}
+                                <span class="badge bg-danger">Low Stock</span>
+                                {% elif item.needs_reorder %}
+                                <span class="badge bg-warning">Reorder</span>
+                                {% else %}
+                                <span class="badge bg-success">OK</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Information -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Stock Information</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <tr>
+                            <th>Current Stock</th>
+                            <td>
+                                <span class="{% if item.is_low_stock %}text-danger{% elif item.needs_reorder %}text-warning{% endif %}">
+                                    {{ item.current_stock }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Minimum Stock</th>
+                            <td>{{ item.minimum_stock }}</td>
+                        </tr>
+                        <tr>
+                            <th>Reorder Level</th>
+                            <td>{{ item.reorder_level }}</td>
+                        </tr>
+                        <tr>
+                            <th>Expiry Date</th>
+                            <td>
+                                {% if item.expiry_date %}
+                                    {% if item.is_expired %}
+                                    <span class="text-danger">{{ item.expiry_date }}</span>
+                                    {% elif item.is_expiring_soon %}
+                                    <span class="text-warning">{{ item.expiry_date }}</span>
+                                    {% else %}
+                                    {{ item.expiry_date }}
+                                    {% endif %}
+                                {% else %}
+                                    N/A
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Last Updated</th>
+                            <td>{{ item.updated_at }}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stock Movement History -->
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Stock Movement History</h5>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Quantity</th>
+                            <th>Reference</th>
+                            <th>Notes</th>
+                            <th>By</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for movement in item.stock_movements.all %}
+                        <tr>
+                            <td>{{ movement.created_at }}</td>
+                            <td>
+                                <span class="badge {% if movement.movement_type == 'in' %}bg-success{% else %}bg-danger{% endif %}">
+                                    {{ movement.get_movement_type_display }}
+                                </span>
+                            </td>
+                            <td>{{ movement.quantity }}</td>
+                            <td>{{ movement.reference_number|default:"N/A" }}</td>
+                            <td>{{ movement.notes|default:"N/A" }}</td>
+                            <td>{{ movement.created_by.get_full_name }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No stock movements recorded.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,192 @@
+# English translations for lab module
+msgid ""
+msgstr ""
+"Project-Id-Version: clinic-management-system\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-03-20 12:00+0000\n"
+"PO-Revision-Date: 2024-03-20 12:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: English\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+# Lab Test Types
+msgid "Lab Test Types"
+msgstr "Lab Test Types"
+
+msgid "Add Test Type"
+msgstr "Add Test Type"
+
+msgid "Code"
+msgstr "Code"
+
+msgid "Name"
+msgstr "Name"
+
+msgid "Price"
+msgstr "Price"
+
+msgid "Turnaround Time"
+msgstr "Turnaround Time"
+
+msgid "Status"
+msgstr "Status"
+
+msgid "Actions"
+msgstr "Actions"
+
+msgid "Active"
+msgstr "Active"
+
+msgid "Inactive"
+msgstr "Inactive"
+
+msgid "Edit"
+msgstr "Edit"
+
+# Lab Test Requests
+msgid "Lab Test Requests"
+msgstr "Lab Test Requests"
+
+msgid "New Request"
+msgstr "New Request"
+
+msgid "Filter Requests"
+msgstr "Filter Requests"
+
+msgid "Apply Filters"
+msgstr "Apply Filters"
+
+msgid "Clear Filters"
+msgstr "Clear Filters"
+
+msgid "Patient"
+msgstr "Patient"
+
+msgid "Test Type"
+msgstr "Test Type"
+
+msgid "Requested By"
+msgstr "Requested By"
+
+msgid "Request Date"
+msgstr "Request Date"
+
+msgid "Scheduled Date"
+msgstr "Scheduled Date"
+
+msgid "Priority"
+msgstr "Priority"
+
+msgid "Urgent"
+msgstr "Urgent"
+
+msgid "High"
+msgstr "High"
+
+msgid "Normal"
+msgstr "Normal"
+
+msgid "Pending"
+msgstr "Pending"
+
+msgid "In Progress"
+msgstr "In Progress"
+
+msgid "Completed"
+msgstr "Completed"
+
+msgid "Cancelled"
+msgstr "Cancelled"
+
+msgid "View"
+msgstr "View"
+
+msgid "Upload Report"
+msgstr "Upload Report"
+
+# Test Request Details
+msgid "Test Request Details"
+msgstr "Test Request Details"
+
+msgid "Back to List"
+msgstr "Back to List"
+
+msgid "Patient Information"
+msgstr "Patient Information"
+
+msgid "ID"
+msgstr "ID"
+
+msgid "Test Information"
+msgstr "Test Information"
+
+msgid "Request Details"
+msgstr "Request Details"
+
+msgid "Status Information"
+msgstr "Status Information"
+
+msgid "Completed Date"
+msgstr "Completed Date"
+
+msgid "Clinical Notes"
+msgstr "Clinical Notes"
+
+msgid "Test Report"
+msgstr "Test Report"
+
+msgid "Results"
+msgstr "Results"
+
+msgid "Reference Range"
+msgstr "Reference Range"
+
+msgid "Interpretation"
+msgstr "Interpretation"
+
+msgid "Test Results"
+msgstr "Test Results"
+
+msgid "Parameter"
+msgstr "Parameter"
+
+msgid "Value"
+msgstr "Value"
+
+msgid "Unit"
+msgstr "Unit"
+
+msgid "Abnormal"
+msgstr "Abnormal"
+
+msgid "Attachments"
+msgstr "Attachments"
+
+msgid "Download"
+msgstr "Download"
+
+msgid "Add Attachment"
+msgstr "Add Attachment"
+
+# Messages
+msgid "Lab test type created successfully."
+msgstr "Lab test type created successfully."
+
+msgid "Lab test type updated successfully."
+msgstr "Lab test type updated successfully."
+
+msgid "Lab test request created successfully."
+msgstr "Lab test request created successfully."
+
+msgid "Test request status updated successfully."
+msgstr "Test request status updated successfully."
+
+msgid "Lab report uploaded successfully."
+msgstr "Lab report uploaded successfully."
+
+msgid "Attachment uploaded successfully."
+msgstr "Attachment uploaded successfully." 

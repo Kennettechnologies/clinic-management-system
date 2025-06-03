@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Prescription</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .clinic-name {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .clinic-address {
+            font-size: 14px;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
+        .patient-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .patient-details {
+            flex: 1;
+        }
+        .prescription-date {
+            text-align: right;
+        }
+        .medication {
+            margin-bottom: 15px;
+        }
+        .medication-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .medication-details {
+            margin-left: 20px;
+        }
+        .footer {
+            margin-top: 50px;
+            text-align: center;
+        }
+        .doctor-signature {
+            margin-top: 50px;
+            border-top: 1px solid #000;
+            width: 200px;
+            text-align: center;
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="clinic-name">Medical Clinic</div>
+        <div class="clinic-address">123 Medical Street, City, Country</div>
+        <div class="clinic-address">Phone: (123) 456-7890</div>
+    </div>
+
+    <div class="section">
+        <div class="patient-info">
+            <div class="patient-details">
+                <strong>Patient Name:</strong> {{ prescription.patient.full_name }}<br>
+                <strong>Age:</strong> {{ prescription.patient.age }}<br>
+                <strong>Gender:</strong> {{ prescription.patient.get_gender_display }}
+            </div>
+            <div class="prescription-date">
+                <strong>Date:</strong> {{ prescription.date }}
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Diagnosis</div>
+        <div>{{ prescription.diagnosis|linebreaks }}</div>
+    </div>
+
+    <div class="section">
+        <div class="section-title">Medications</div>
+        {% for item in prescription.items.all %}
+        <div class="medication">
+            <div class="medication-title">{{ item.medicine_name }}</div>
+            <div class="medication-details">
+                <strong>Dosage:</strong> {{ item.dosage }}<br>
+                <strong>Frequency:</strong> {{ item.frequency }}<br>
+                <strong>Duration:</strong> {{ item.duration }}<br>
+                {% if item.instructions %}
+                <strong>Instructions:</strong> {{ item.instructions|linebreaks }}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if prescription.notes %}
+    <div class="section">
+        <div class="section-title">Notes</div>
+        <div>{{ prescription.notes|linebreaks }}</div>
+    </div>
+    {% endif %}
+
+    <div class="footer">
+        <div class="doctor-signature">
+            Dr. {{ prescription.doctor.get_full_name }}<br>
+            Medical License No: {{ prescription.doctor.license_number }}
+        </div>
+    </div>
+</body>
+</html> 

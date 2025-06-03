@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Revenue Report{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Revenue Report</h1>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'reports:report_list' %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Reports
+            </a>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="post" class="row g-3">
+                {% csrf_token %}
+                <div class="col-md-3">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="end_date" class="form-label">End Date</label>
+                    <input type="date" class="form-control" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}">
+                </div>
+                <div class="col-md-3">
+                    <label for="period_type" class="form-label">Period Type</label>
+                    <select class="form-select" id="period_type" name="period_type">
+                        <option value="daily" {% if period_type == 'daily' %}selected{% endif %}>Daily</option>
+                        <option value="weekly" {% if period_type == 'weekly' %}selected{% endif %}>Weekly</option>
+                        <option value="monthly" {% if period_type == 'monthly' %}selected{% endif %}>Monthly</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">&nbsp;</label>
+                    <button type="submit" class="btn btn-primary w-100">Generate Report</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Revenue</h6>
+                    <h2 class="mb-0">${{ summary.total_revenue|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Total Paid</h6>
+                    <h2 class="mb-0">${{ summary.total_paid|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Outstanding</h6>
+                    <h2 class="mb-0">${{ summary.total_outstanding|floatformat:2 }}</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-info text-white">
+                <div class="card-body">
+                    <h6 class="card-title">Collection Rate</h6>
+                    <h2 class="mb-0">
+                        {% if summary.total_revenue > 0 %}
+                        {{ summary.total_paid|div:summary.total_revenue|mul:100|floatformat:1 }}%
+                        {% else %}
+                        0%
+                        {% endif %}
+                    </h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Period</th>
+                            <th>Total Revenue</th>
+                            <th>Total Paid</th>
+                            <th>Outstanding</th>
+                            <th>Collection Rate</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for revenue in revenues %}
+                        <tr>
+                            <td>
+                                {% if period_type == 'daily' %}
+                                {{ revenue.period|date:"M d, Y" }}
+                                {% elif period_type == 'weekly' %}
+                                Week of {{ revenue.period|date:"M d, Y" }}
+                                {% else %}
+                                {{ revenue.period|date:"F Y" }}
+                                {% endif %}
+                            </td>
+                            <td>${{ revenue.total_revenue|floatformat:2 }}</td>
+                            <td>${{ revenue.total_paid|floatformat:2 }}</td>
+                            <td>${{ revenue.outstanding|floatformat:2 }}</td>
+                            <td>
+                                {% if revenue.total_revenue > 0 %}
+                                {{ revenue.total_paid|div:revenue.total_revenue|mul:100|floatformat:1 }}%
+                                {% else %}
+                                0%
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No revenue data found for the selected period.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Add chart initialization code here if needed
+</script>
+{% endblock %}
+{% endblock %} 

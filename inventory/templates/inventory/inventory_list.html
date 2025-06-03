@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Inventory Management{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h2>Inventory Management</h2>
+        </div>
+        <div class="col-md-4 text-end">
+            <a href="{% url 'inventory:item_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add New Item
+            </a>
+            <a href="{% url 'inventory:stock_movement_create' %}" class="btn btn-success">
+                <i class="fas fa-exchange-alt"></i> Record Movement
+            </a>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label for="category" class="form-label">Category</label>
+                    <select name="category" id="category" class="form-select">
+                        <option value="">All Categories</option>
+                        {% for category in categories %}
+                        <option value="{{ category.id }}" {% if category.id|stringformat:"s" == current_category %}selected{% endif %}>
+                            {{ category.name }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="stock_status" class="form-label">Stock Status</label>
+                    <select name="stock_status" id="stock_status" class="form-select">
+                        <option value="">All Stock Levels</option>
+                        <option value="low" {% if current_stock_status == 'low' %}selected{% endif %}>Low Stock</option>
+                        <option value="reorder" {% if current_stock_status == 'reorder' %}selected{% endif %}>Reorder Level</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label for="expiry_status" class="form-label">Expiry Status</label>
+                    <select name="expiry_status" id="expiry_status" class="form-select">
+                        <option value="">All Items</option>
+                        <option value="expired" {% if current_expiry_status == 'expired' %}selected{% endif %}>Expired</option>
+                        <option value="expiring_soon" {% if current_expiry_status == 'expiring_soon' %}selected{% endif %}>Expiring Soon</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary me-2">Apply Filters</button>
+                    <a href="{% url 'inventory:inventory_list' %}" class="btn btn-secondary">Clear</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>SKU</th>
+                            <th>Current Stock</th>
+                            <th>Unit</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.name }}</td>
+                            <td>{{ item.category.name }}</td>
+                            <td>{{ item.sku }}</td>
+                            <td>
+                                <span class="{% if item.is_low_stock %}text-danger{% elif item.needs_reorder %}text-warning{% endif %}">
+                                    {{ item.current_stock }}
+                                </span>
+                            </td>
+                            <td>{{ item.get_unit_display }}</td>
+                            <td>{{ item.location }}</td>
+                            <td>
+                                {% if item.is_expired %}
+                                <span class="badge bg-danger">Expired</span>
+                                {% elif item.is_low_stock %}
+                                <span class="badge bg-danger">Low Stock</span>
+                                {% elif item.needs_reorder %}
+                                <span class="badge bg-warning">Reorder</span>
+                                {% else %}
+                                <span class="badge bg-success">OK</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'inventory:item_detail' item.pk %}" class="btn btn-sm btn-info">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                <a href="{% url 'inventory:item_update' item.pk %}" class="btn btn-sm btn-warning">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No items found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

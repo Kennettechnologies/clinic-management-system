@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Prescription Details{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <h1 class="h3">Prescription Details</h1>
+        </div>
+        <div class="col text-end">
+            <a href="{% url 'patients:patient_detail' prescription.patient.pk %}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Patient
+            </a>
+            <a href="{% url 'patients:prescription_print' prescription.pk %}" class="btn btn-primary" target="_blank">
+                <i class="fas fa-print"></i> Print Prescription
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Prescription Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-3">Date</dt>
+                        <dd class="col-sm-9">{{ prescription.date }}</dd>
+
+                        <dt class="col-sm-3">Diagnosis</dt>
+                        <dd class="col-sm-9">{{ prescription.diagnosis|linebreaks }}</dd>
+
+                        {% if prescription.notes %}
+                        <dt class="col-sm-3">Notes</dt>
+                        <dd class="col-sm-9">{{ prescription.notes|linebreaks }}</dd>
+                        {% endif %}
+                    </dl>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Medications</h5>
+                </div>
+                <div class="card-body">
+                    {% for item in prescription.items.all %}
+                    <div class="mb-4">
+                        <h6>{{ item.medicine_name }}</h6>
+                        <dl class="row mb-0">
+                            <dt class="col-sm-3">Dosage</dt>
+                            <dd class="col-sm-9">{{ item.dosage }}</dd>
+
+                            <dt class="col-sm-3">Frequency</dt>
+                            <dd class="col-sm-9">{{ item.frequency }}</dd>
+
+                            <dt class="col-sm-3">Duration</dt>
+                            <dd class="col-sm-9">{{ item.duration }}</dd>
+
+                            {% if item.instructions %}
+                            <dt class="col-sm-3">Instructions</dt>
+                            <dd class="col-sm-9">{{ item.instructions|linebreaks }}</dd>
+                            {% endif %}
+                        </dl>
+                    </div>
+                    {% if not forloop.last %}<hr>{% endif %}
+                    {% empty %}
+                    <p class="text-center mb-0">No medications prescribed</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Patient Information</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-4">Name</dt>
+                        <dd class="col-sm-8">{{ prescription.patient.full_name }}</dd>
+
+                        <dt class="col-sm-4">Age</dt>
+                        <dd class="col-sm-8">{{ prescription.patient.age }}</dd>
+
+                        <dt class="col-sm-4">Gender</dt>
+                        <dd class="col-sm-8">{{ prescription.patient.get_gender_display }}</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
