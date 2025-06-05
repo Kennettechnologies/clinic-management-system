@@ -23,5 +23,14 @@
     "env": {
         "PYTHONPATH": ".",
         "DJANGO_SETTINGS_MODULE": "clinic_management.settings"
-    }
+    },
+    "buildCommand": "pip install -r requirements.txt",
+    "outputDirectory": ".",
+    "ignoreCommand": "echo 'No ignore'",
+    "rewrites": [
+        {
+            "source": "/(.*)",
+            "destination": "/api"
+        }
+    ]
 } 
