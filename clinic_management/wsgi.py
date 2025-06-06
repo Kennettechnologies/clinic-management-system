@@ -1,1 +1,0 @@
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clinic_management_system.settings') 

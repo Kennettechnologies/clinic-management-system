@@ -1,1 +1,0 @@
-ROOT_URLCONF = 'clinic_management_system.urls' 
