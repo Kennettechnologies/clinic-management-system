@@ -6,6 +6,10 @@ import sys
 
 def main():
     """Run administrative tasks."""
+    # Add the project directory to Python path
+    project_root = os.path.dirname(os.path.abspath(__file__))
+    sys.path.append(project_root)
+    
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'clinic_management_system.settings')
     try:
         from django.core.management import execute_from_command_line
